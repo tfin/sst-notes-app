@@ -1,45 +1,48 @@
 import { useState, useEffect } from "react";
+import ListGroup from "react-bootstrap/ListGroup";
+import { useAppContext } from "../lib/contextLib";
+import "./Home.css";
 import { API } from "aws-amplify";
 import { NoteType } from "../types/note";
 import { onError } from "../lib/errorLib";
 import { BsPencilSquare } from "react-icons/bs";
-import ListGroup from "react-bootstrap/ListGroup";
 import { LinkContainer } from "react-router-bootstrap";
-import { useAppContext } from "../lib/contextLib";
-import "./Home.css";
 
 export default function Home() {
   const [notes, setNotes] = useState<Array<NoteType>>([]);
   const { isAuthenticated } = useAppContext();
   const [isLoading, setIsLoading] = useState(true);
 
+
   useEffect(() => {
     async function onLoad() {
       if (!isAuthenticated) {
         return;
       }
-
+  
       try {
         const notes = await loadNotes();
         setNotes(notes);
       } catch (e) {
         onError(e);
       }
-
+  
       setIsLoading(false);
     }
-
+  
     onLoad();
   }, [isAuthenticated]);
-
+  
   function loadNotes() {
     return API.get("notes", "/notes", {});
   }
 
+
+
   function formatDate(str: undefined | string) {
     return !str ? "" : new Date(str).toLocaleString();
   }
-
+  
   function renderNotesList(notes: NoteType[]) {
     return (
       <>
